@@ -4,13 +4,14 @@ import qs.Ui
 import "../YtmModel.js" as Model
 
 // Cover, track info, seek bar, transport and volume for the current track.
-Column {
+Item {
   id: root
 
   property var service: null
   property QtObject bar: null
+  property bool panelOpen: false
 
-  readonly property color foreground: bar ? bar.foreground : Color.foreground
+  readonly property color foreground: "#e2e8f0"
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
   readonly property var track: service ? service.currentTrack : null
   readonly property bool hasMedia: service ? service.hasMedia : false
@@ -26,7 +27,105 @@ Column {
   signal artistRequested(var artist)
   signal albumRequested(var track)
 
-  spacing: Style.space(10)
+  implicitHeight: content.implicitHeight + Style.space(28)
+
+  Rectangle {
+    anchors.fill: parent
+    radius: Style.space(14)
+    color: "#1a1c23"
+    border.width: 1
+    border.color: Qt.rgba(1, 1, 1, 0.06)
+  }
+
+  Column {
+    id: content
+    anchors.fill: parent
+    anchors.margins: Style.space(14)
+    spacing: Style.space(10)
+
+    Row {
+      width: parent.width
+      height: Style.space(20)
+      spacing: Style.space(6)
+
+      Rectangle {
+        width: Style.space(6)
+        height: width
+        radius: width / 2
+        color: root.service && root.service.playing ? "#8b5cf6" : "#697080"
+        anchors.verticalCenter: parent.verticalCenter
+      }
+
+      Text {
+        id: statusLabel
+        text: root.service && root.service.playing ? "NOW PLAYING" : "READY WHEN YOU ARE"
+        color: "#8b92a5"
+        font.family: root.fontFamily
+        font.pixelSize: Style.font.caption
+        font.bold: true
+        font.letterSpacing: 1
+      }
+
+      Item {
+        width: parent.width - statusLabel.width - liveLabel.width - visualizer.width - parent.spacing * 3
+        height: 1
+      }
+
+      Text {
+        id: liveLabel
+        anchors.verticalCenter: parent.verticalCenter
+        text: root.service && root.service.playing ? "LIVE" : "YTM"
+        color: "#a78bfa"
+        font.family: root.fontFamily
+        font.pixelSize: Style.font.caption
+        font.bold: true
+      }
+
+      Item {
+        id: visualizer
+        readonly property bool active: !!root.service && root.service.playing && root.panelOpen
+        property var levels: [5, 12, 8, 16, 7, 13, 10, 18, 8, 14, 6, 11]
+        width: active ? Style.space(48) : 0
+        height: Style.space(20)
+        visible: active
+
+        Timer {
+          interval: 150
+          repeat: true
+          running: visualizer.active
+          onTriggered: {
+            var next = []
+            for (var i = 0; i < 12; i++) next.push(3 + Math.random() * Style.space(16))
+            visualizer.levels = next
+          }
+        }
+
+        Row {
+          anchors.fill: parent
+          spacing: Style.space(2)
+
+          Repeater {
+            model: 12
+
+            Rectangle {
+              required property int index
+              width: Style.space(2)
+              height: Math.max(Style.space(3), visualizer.levels[index])
+              anchors.verticalCenter: parent.verticalCenter
+              radius: width
+              color: index % 3 === 0 ? "#a78bfa" : "#8b5cf6"
+
+              Behavior on height {
+                NumberAnimation {
+                  duration: Style.duration(140)
+                  easing.type: Easing.OutCubic
+                }
+              }
+            }
+          }
+        }
+      }
+    }
 
   Row {
     width: parent.width
@@ -34,7 +133,7 @@ Column {
 
     CoverArt {
       id: cover
-      size: Style.space(104)
+      size: Style.space(80)
       store: root.service ? root.service.store : null
       source: root.track ? (root.track.thumbLarge || root.track.thumb || "") : ""
       foreground: root.foreground
@@ -195,6 +294,9 @@ Column {
       maximum: Math.max(1, root.duration)
       step: 1
       value: root.position
+      trackColor: "#35323f"
+      fillColor: "#8b5cf6"
+      knobColor: "#c4b5fd"
       enabled: root.hasMedia && root.duration > 0
       opacity: enabled ? 1 : 0.4
       // Seek once, on release; while dragging only the time preview moves.
@@ -235,7 +337,8 @@ Column {
       visible: root.accountActions
       iconText: root.liked ? "󰋑" : "󰋕"
       tooltipText: root.liked ? "Remove from Liked Music (L)" : "Like (L)"
-      foreground: root.liked ? Color.accent : root.foreground
+      foreground: root.liked ? "#a78bfa" : root.foreground
+      accent: "#8b5cf6"
       onClicked: root.service.toggleLike(root.track)
     }
 
@@ -246,6 +349,7 @@ Column {
       iconText: "󰐒"
       tooltipText: "Add to playlist (p)"
       foreground: root.foreground
+      accent: "#8b5cf6"
       onClicked: root.addToPlaylistRequested()
     }
 
@@ -259,7 +363,8 @@ Column {
         anchors.verticalCenter: parent.verticalCenter
         iconText: shuffleOn ? "󰒝" : "󰒞"
         tooltipText: shuffleOn ? "Shuffle is on (s)" : "Shuffle (s)"
-        foreground: shuffleOn ? Color.accent : Qt.darker(root.foreground, 1.4)
+        foreground: shuffleOn ? "#a78bfa" : "#8b92a5"
+        accent: "#8b5cf6"
         onClicked: root.service.toggleShuffle()
       }
 
@@ -268,6 +373,7 @@ Column {
         iconText: "󰒮"
         tooltipText: "Previous"
         foreground: root.foreground
+        accent: "#8b5cf6"
         enabled: root.hasMedia
         opacity: enabled ? 1 : 0.4
         onClicked: root.service.previous()
@@ -275,11 +381,17 @@ Column {
 
       Button {
         anchors.verticalCenter: parent.verticalCenter
+        width: Style.space(38)
+        height: width
+        radius: width / 2
+        horizontalPadding: 0
+        verticalPadding: 0
         iconText: root.service && root.service.playing ? "󰏤" : "󰐊"
         tooltipText: root.service && root.service.playing ? "Pause" : "Play"
-        foreground: root.foreground
-        iconSize: Style.font.iconLarge
-        horizontalPadding: Style.spacing.panelGap
+        foreground: "#ffffff"
+        accent: "#8b5cf6"
+        selected: true
+        iconSize: Style.font.icon
         enabled: !!root.service && (root.hasMedia || root.service.playlistCount > 0)
         opacity: enabled ? 1 : 0.4
         onClicked: root.service.playPause()
@@ -290,6 +402,7 @@ Column {
         iconText: "󰒭"
         tooltipText: "Next"
         foreground: root.foreground
+        accent: "#8b5cf6"
         enabled: root.hasMedia
         opacity: enabled ? 1 : 0.4
         onClicked: root.service.next()
@@ -300,7 +413,8 @@ Column {
         anchors.verticalCenter: parent.verticalCenter
         iconText: loopMode === "one" ? "󰑘" : loopMode === "all" ? "󰑖" : "󰑗"
         tooltipText: loopMode === "one" ? "Repeating this song (r)" : loopMode === "all" ? "Repeating the queue (r)" : "Repeat (r)"
-        foreground: loopMode !== "off" ? Color.accent : Qt.darker(root.foreground, 1.4)
+        foreground: loopMode !== "off" ? "#a78bfa" : "#8b92a5"
+        accent: "#8b5cf6"
         onClicked: root.service.cycleRepeat()
       }
     }
@@ -331,6 +445,9 @@ Column {
       step: 5
       integer: true
       value: root.service ? Math.min(100, root.service.volume) : 100
+      trackColor: "#35323f"
+      fillColor: "#8b5cf6"
+      knobColor: "#c4b5fd"
       onMoved: function(v) { if (root.service) root.service.setVolume(v) }
     }
 
@@ -345,5 +462,6 @@ Column {
       font.family: root.fontFamily
       font.pixelSize: Style.font.caption
     }
+  }
   }
 }

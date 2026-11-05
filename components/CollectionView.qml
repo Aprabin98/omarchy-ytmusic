@@ -18,7 +18,7 @@ Item {
   property string error: ""
 
   readonly property var store: service ? service.store : null
-  readonly property color foreground: bar ? bar.foreground : Color.foreground
+  readonly property color foreground: "#e2e8f0"
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
   readonly property var ref: Model.collectionTarget(target)
   readonly property bool isArtist: !!ref && ref.kind === "artist"
@@ -161,6 +161,7 @@ Item {
           iconText: "󰐊"
           text: "Play"
           foreground: root.foreground
+          accent: "#8b5cf6"
           fontSize: Style.font.caption
           onClicked: root.service.playCollection(root.tracks, 0, false)
         }
@@ -169,6 +170,7 @@ Item {
           text: "Shuffle"
           tooltipText: "Turn shuffle on and play in random order"
           foreground: root.foreground
+          accent: "#8b5cf6"
           fontSize: Style.font.caption
           onClicked: root.service.playCollection(root.tracks, 0, true)
         }
@@ -176,6 +178,7 @@ Item {
         Button {
           text: "Queue all"
           foreground: root.foreground
+          accent: "#8b5cf6"
           fontSize: Style.font.caption
           onClicked: root.service.queueAll(root.tracks)
         }

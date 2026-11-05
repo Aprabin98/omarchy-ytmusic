@@ -12,10 +12,18 @@ Item {
   property QtObject bar: null
   property int cursorIndex: -1
 
-  readonly property color foreground: bar ? bar.foreground : Color.foreground
+  readonly property color foreground: "#e2e8f0"
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
   readonly property var queue: service ? service.queue : []
   readonly property int currentIndex: service ? service.playlistPos : -1
+
+  Rectangle {
+    anchors.fill: parent
+    radius: Style.space(14)
+    color: "#1a1c23"
+    border.width: 1
+    border.color: Qt.rgba(1, 1, 1, 0.06)
+  }
 
   function ensureVisible(index) {
     if (index >= 0 && index < list.count) list.positionViewAtIndex(index, ListView.Contain)
@@ -54,7 +62,9 @@ Item {
 
   Item {
     id: header
-    width: parent.width
+    x: Style.space(12)
+    y: Style.space(10)
+    width: parent.width - Style.space(24)
     height: Math.max(heading.implicitHeight, autoplayButton.implicitHeight)
 
     Text {
@@ -63,7 +73,7 @@ Item {
       textFormat: Text.PlainText
       text: root.queue.length === 0 ? "QUEUE"
         : "QUEUE  " + (root.currentIndex >= 0 ? (root.currentIndex + 1) + " / " : "") + root.queue.length
-      color: Qt.darker(root.foreground, 1.4)
+      color: "#8b92a5"
       font.family: root.fontFamily
       font.pixelSize: Style.font.caption
       font.letterSpacing: 1
@@ -77,11 +87,12 @@ Item {
       Button {
         id: autoplayButton
         readonly property bool autoplayOn: !!root.service && root.service.autoplay
-        text: "Autoplay"
+        text: autoplayOn ? "Autoplay on" : "Autoplay off"
         selected: autoplayOn
         tooltipText: autoplayOn ? "Similar songs follow when the queue ends (click to turn off)"
           : "Keep playing similar songs when the queue ends"
         foreground: root.foreground
+        accent: "#8b5cf6"
         fontSize: Style.font.caption
         onClicked: root.service.toggleAutoplay()
       }
@@ -91,6 +102,7 @@ Item {
         text: "Clear"
         tooltipText: "Remove everything except the current track"
         foreground: root.foreground
+        accent: "#8b5cf6"
         fontSize: Style.font.caption
         onClicked: root.service.clearUpcoming()
       }
@@ -102,7 +114,9 @@ Item {
     anchors.top: header.bottom
     anchors.topMargin: Style.space(6)
     anchors.bottom: parent.bottom
-    width: parent.width
+    anchors.bottomMargin: Style.space(8)
+    x: Style.space(6)
+    width: parent.width - Style.space(12)
     clip: true
     boundsBehavior: Flickable.StopAtBounds
     spacing: Style.space(2)

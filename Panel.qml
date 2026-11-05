@@ -29,7 +29,7 @@ Panel {
   readonly property var barIdentity: hostWidget || root
 
   readonly property var store: service ? service.store : null
-  readonly property color foreground: bar ? bar.foreground : Color.foreground
+  readonly property color foreground: "#e2e8f0"
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
   readonly property bool sessionProblem: !!service && (service.authState === "expired" || service.authState === "invalid")
 
@@ -196,13 +196,22 @@ Panel {
     bar: root.bar
     open: root.opened
     focusTarget: root.tab === "search" && !root.page ? searchView.field : keyCatcher
-    contentWidth: panel.fittedContentWidth(Style.space(440))
-    contentHeight: panel.fittedContentHeight(Style.space(600))
+    contentWidth: panel.fittedContentWidth(Style.space(420))
+    contentHeight: panel.fittedContentHeight(Style.space(720))
 
     PanelKeyCatcher {
       id: keyCatcher
       anchors.fill: parent
       blocked: searchView.field.activeFocus || libraryView.inputFocused || picker.inputFocused
+
+      Rectangle {
+        anchors.fill: parent
+        z: -1
+        radius: Style.space(18)
+        color: "#121316"
+        border.width: 1
+        border.color: Qt.rgba(1, 1, 1, 0.08)
+      }
 
       onCloseRequested: root.handleEscape()
       onTabRequested: function(direction) { root.switchPanel(direction) }
@@ -243,31 +252,103 @@ Panel {
       Item {
         id: header
         width: parent.width
-        height: tabRow.implicitHeight
+        height: headerColumn.implicitHeight
 
-        Row {
-          id: tabRow
-          spacing: Style.space(4)
+        Column {
+          id: headerColumn
+          width: parent.width
+          spacing: Style.space(10)
 
-          Button {
-            visible: !!root.page
-            iconText: "󰁍"
-            tooltipText: "Back (Esc)"
-            foreground: root.foreground
-            onClicked: root.back()
+          Row {
+            width: parent.width
+            spacing: Style.space(9)
+            anchors.left: parent.left
+
+            Rectangle {
+              width: Style.space(28)
+              height: width
+              radius: Style.space(8)
+              color: Qt.rgba(0.545, 0.361, 0.965, 0.2)
+              gradient: Gradient {
+                GradientStop { position: 0; color: "#8b5cf6" }
+                GradientStop { position: 1; color: "#4f46e5" }
+              }
+              anchors.verticalCenter: parent.verticalCenter
+
+              Text {
+                anchors.centerIn: parent
+                text: "▶"
+                color: "#ffffff"
+                font.family: root.fontFamily
+                font.pixelSize: Style.font.title
+                font.bold: true
+              }
+            }
+
+            Column {
+              anchors.verticalCenter: parent.verticalCenter
+              spacing: Style.space(1)
+
+              Text {
+                text: "OMARCHARY"
+                color: root.foreground
+                font.family: root.fontFamily
+                font.pixelSize: Style.font.caption
+                font.bold: true
+                font.letterSpacing: 1.2
+              }
+
+              Text {
+                text: root.page ? root.page.name : "YouTube Music · v1.0"
+                color: "#8b92a5"
+                font.family: root.fontFamily
+                font.pixelSize: Style.font.caption
+                elide: Text.ElideRight
+              }
+            }
           }
 
-          Repeater {
-            model: root.tabs
+          Rectangle {
+            id: tabSurface
+            width: parent.width
+            height: tabRow.implicitHeight + Style.space(6)
+            radius: Style.space(10)
+            color: "#1a1c23"
+            border.width: 1
+            border.color: Qt.rgba(1, 1, 1, 0.05)
 
-            Button {
-              required property var modelData
-              required property int index
-              text: modelData.title
-              tooltipText: modelData.title + " (" + (index + 1) + ")"
-              selected: root.tab === modelData.key && !root.page
-              foreground: root.foreground
-              onClicked: root.setTab(modelData.key)
+            Row {
+              id: tabRow
+              anchors.fill: parent
+              anchors.margins: Style.space(3)
+              spacing: Style.space(2)
+
+              Button {
+                id: backButton
+                visible: !!root.page
+                width: visible ? Style.space(34) : 0
+                iconText: "󰁍"
+                tooltipText: "Back (Esc)"
+                foreground: root.foreground
+                accent: "#8b5cf6"
+                onClicked: root.back()
+              }
+
+              Repeater {
+                model: root.tabs
+
+                Button {
+                  required property var modelData
+                  required property int index
+                  width: (tabRow.width - (backButton.visible ? backButton.width + tabRow.spacing : 0) - tabRow.spacing * 3) / 4
+                  text: modelData.title
+                  tooltipText: modelData.title + " (" + (index + 1) + ")"
+                  selected: root.tab === modelData.key && !root.page
+                  foreground: root.foreground
+                  accent: "#8b5cf6"
+                  onClicked: root.setTab(modelData.key)
+                }
+              }
             }
           }
         }
@@ -362,7 +443,8 @@ Panel {
         id: content
         anchors.top: banner.bottom
         anchors.topMargin: Style.space(12)
-        anchors.bottom: parent.bottom
+        anchors.bottom: footer.top
+        anchors.bottomMargin: Style.space(8)
         width: parent.width
 
         Column {
@@ -376,6 +458,7 @@ Panel {
             width: parent.width
             service: root.service
             bar: root.bar
+            panelOpen: root.opened
             onAddToPlaylistRequested: root.openPicker([root.service.currentTrack])
             onArtistRequested: function(artist) { root.openArtist(artist) }
             onAlbumRequested: function(track) { root.openAlbumOf(track) }
@@ -444,6 +527,52 @@ Panel {
           service: root.service
           bar: root.bar
           onClosed: keyCatcher.forceActiveFocus()
+        }
+      }
+
+      Rectangle {
+        id: footer
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        height: Style.space(30)
+        radius: Style.space(9)
+        color: "#1a1c23"
+        border.width: 1
+        border.color: Qt.rgba(1, 1, 1, 0.05)
+
+        Rectangle {
+          anchors.left: parent.left
+          anchors.leftMargin: Style.space(10)
+          anchors.verticalCenter: parent.verticalCenter
+          width: Style.space(6)
+          height: width
+          radius: width / 2
+          color: root.service && root.service.workerState === "ready" ? "#34d399" : "#697080"
+        }
+
+        Text {
+          anchors.left: parent.left
+          anchors.leftMargin: Style.space(22)
+          anchors.verticalCenter: parent.verticalCenter
+          text: "YOUTUBE MUSIC SERVICE"
+          color: "#8b92a5"
+          font.family: root.fontFamily
+          font.pixelSize: Style.font.caption
+          font.bold: true
+          font.letterSpacing: 0.5
+        }
+
+        Text {
+          anchors.right: parent.right
+          anchors.rightMargin: Style.space(10)
+          anchors.verticalCenter: parent.verticalCenter
+          text: !root.service ? "OFFLINE"
+            : root.service.workerState === "ready" ? "CONNECTED"
+            : root.service.workerState === "starting" ? "CONNECTING" : "STANDBY"
+          color: root.service && root.service.workerState === "ready" ? "#34d399" : "#8b92a5"
+          font.family: root.fontFamily
+          font.pixelSize: Style.font.caption
         }
       }
     }

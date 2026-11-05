@@ -12,7 +12,7 @@ Item {
   property QtObject bar: null
 
   readonly property var store: service ? service.store : null
-  readonly property color foreground: bar ? bar.foreground : Color.foreground
+  readonly property color foreground: "#e2e8f0"
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
   readonly property var rows: store ? Model.homeRows(store.shelves) : []
   readonly property alias results: resultList
@@ -45,12 +45,22 @@ Item {
   Item {
     id: header
     width: parent.width
-    height: Math.max(statusText.implicitHeight, refreshButton.implicitHeight)
+    height: Math.max(statusText.implicitHeight, refreshButton.implicitHeight) + Style.space(16)
+
+    Rectangle {
+      anchors.fill: parent
+      radius: Style.space(12)
+      color: "#1a1c23"
+      border.width: 1
+      border.color: Qt.rgba(1, 1, 1, 0.06)
+    }
 
     Text {
       id: statusText
       anchors.verticalCenter: parent.verticalCenter
-      width: parent.width - refreshButton.width - Style.space(8)
+      anchors.left: parent.left
+      anchors.leftMargin: Style.space(12)
+      width: parent.width - refreshButton.width - Style.space(32)
       textFormat: Text.PlainText
       wrapMode: Text.Wrap
       text: !root.store ? ""
@@ -66,10 +76,12 @@ Item {
     Button {
       id: refreshButton
       anchors.right: parent.right
+      anchors.rightMargin: Style.space(6)
       anchors.verticalCenter: parent.verticalCenter
       iconText: "󰑐"
       tooltipText: "Refresh"
       foreground: root.foreground
+      accent: "#8b5cf6"
       fontSize: Style.font.caption
       onClicked: root.refresh(true)
     }

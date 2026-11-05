@@ -11,7 +11,7 @@ Column {
   property QtObject bar: null
   property bool expired: false
 
-  readonly property color foreground: bar ? bar.foreground : Color.foreground
+  readonly property color foreground: "#e2e8f0"
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
 
   spacing: Style.space(10)
@@ -43,6 +43,7 @@ Column {
     iconText: "󰍂"
     text: root.expired ? "Sign in again" : "Sign in"
     foreground: root.foreground
+    accent: "#8b5cf6"
     onClicked: if (root.service) root.service.signIn()
   }
 

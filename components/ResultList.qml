@@ -17,7 +17,7 @@ ListView {
   property bool removable: false
   property string removeTooltip: "Remove"
 
-  readonly property color foreground: bar ? bar.foreground : Color.foreground
+  readonly property color foreground: "#e2e8f0"
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
 
   // index = row index in `rows`
@@ -126,7 +126,7 @@ ListView {
         Rectangle {
           anchors.fill: parent
           radius: Style.spacing.labelGap
-          color: queryHover.hovered || queryRow.highlighted ? Style.hoverFillFor(root.foreground, Color.accent) : "transparent"
+          color: queryHover.hovered || queryRow.highlighted ? Style.hoverFillFor(root.foreground, "#8b5cf6") : "transparent"
         }
 
         HoverHandler {

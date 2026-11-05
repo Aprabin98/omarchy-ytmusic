@@ -12,7 +12,7 @@ Item {
   property QtObject bar: null
 
   readonly property var store: service ? service.store : null
-  readonly property color foreground: bar ? bar.foreground : Color.foreground
+  readonly property color foreground: "#e2e8f0"
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
   readonly property var resultRows: store ? Model.flattenSearch(store.result, store.filter) : []
   // Suggestions show above the results while you type; Tab / Shift+Tab put
@@ -127,6 +127,7 @@ Item {
     width: parent.width
     placeholderText: "Search YouTube Music"
     foreground: root.foreground
+    accent: "#8b5cf6"
     font.family: root.fontFamily
 
     Component.onCompleted: if (root.store) root.setText(root.store.query)
@@ -185,6 +186,7 @@ Item {
         text: modelData.title
         selected: !!root.store && root.store.filter === modelData.key
         foreground: root.foreground
+        accent: "#8b5cf6"
         fontSize: Style.font.caption
         onClicked: root.setFilter(modelData.key)
       }

@@ -25,7 +25,7 @@ Item {
   ClippingRectangle {
     anchors.fill: parent
     radius: root.radius
-    color: Style.normalFillFor(root.foreground, Color.accent)
+    color: Style.normalFillFor(root.foreground, "#8b5cf6")
 
     Image {
       id: image

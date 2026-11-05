@@ -17,12 +17,13 @@
 
 # YouTube Music for Omarchy
 
+[![Repository](https://img.shields.io/badge/source-Aprabin98%2Fomarchy--ytmusic-1f2335)](https://github.com/Aprabin98/omarchy-ytmusic)
 [![Release](https://img.shields.io/github/v/release/Aprabin98/omarchy-ytmusic?label=release)](https://github.com/Aprabin98/omarchy-ytmusic/releases)
-[![License: MIT](https://img.shields.io/github/license/Aprabin98/omarchy-ytmusic)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-2ea44f)](LICENSE)
 [![Omarchy shell plugin](https://img.shields.io/badge/Omarchy-shell%20plugin-1f2335)](https://github.com/basecamp/omarchy)
 ![Memory](https://img.shields.io/badge/memory-~75%20MiB%20playing%20%C2%B7%200%20idle-2ea44f)
 
-Plugin id `aprabin98.ytmusic` · the Omarchy logo is from [basecamp/omarchy](https://github.com/basecamp/omarchy) (MIT)
+Plugin id `aprabin98.ytmusic` · made by [Prabin Acharya](https://github.com/Aprabin98). The Omarchy logo is from [basecamp/omarchy](https://github.com/basecamp/omarchy) (MIT).
 
 </div>
 
@@ -42,13 +43,14 @@ ytmusicapi and yt-dlp, which can break when YouTube changes something
 - 📚 **Your library**: playlists (create, add, remove, delete), likes and Liked Music, History, Home
 - 👤 **Artist and album pages**, one click from what's playing
 - ⏯️ **Media keys and OSD** over MPRIS; the bar shows an icon or scrolling now-playing text
+- 🎚️ **Animated visualizer** appears in the player card while a track is playing
 - ⚡ **Fast starts**: streams are looked up ahead, pages and covers come from a disk cache
 - 🪶 **Light**: no browser; ~75 MiB while playing, nothing when idle; resumes where you stopped
 
 <p align="center">
-  <img src="docs/screenshot-now.png" alt="Now tab: cover, seek bar, like, shuffle, transport, repeat, add to playlist, volume, and the queue with songs autoplay added" width="400">
+  <img src="docs/screenshot-now.png" alt="Now tab: animated visualizer, cover, seek bar, like, shuffle, transport, repeat, add to playlist, volume, and the queue with autoplay" width="400">
   &nbsp;
-  <img src="docs/screenshot-search.png" alt="Search tab: results for daft punk with filters, the top result and songs" width="400">
+  <img src="docs/screenshot-library.png" alt="Library playlist page: cover collage, Play, Shuffle, Queue all, Delete, and the song list" width="400">
 </p>
 
 ```text
@@ -66,6 +68,14 @@ omarchy-pkg-add uv deno    # mpv, mpv-mpris and yt-dlp already come with Omarchy
 omarchy plugin add https://github.com/Aprabin98/omarchy-ytmusic.git --enable
 ```
 
+If you use [Prabin's Omarchy setup](https://github.com/Aprabin98/omarchy-setup),
+install it from there instead:
+
+```bash
+cd ~/omarchy-setup
+./bin/omarchy-setup install music
+```
+
 `uv` runs the ytmusicapi helper (it builds its own Python environment on
 first use) and `deno` is yt-dlp's solver for YouTube's JavaScript challenge;
 if either is missing, the panel shows a banner with an **Install** button.
@@ -80,12 +90,16 @@ Optional:
   `o.bind("SUPER + M", "YouTube Music", "omarchy-shell shell toggle aprabin98.ytmusic")`.
 - **Check the installation**: `~/.config/omarchy/plugins/aprabin98.ytmusic/bin/ytm selftest --online`.
 
-Uninstall: `bin/ytm logout`, then `omarchy plugin remove aprabin98.ytmusic` and
-`rm -rf ~/.cache/omarchy-ytmusic`.
+Uninstall: `bin/ytm logout`, then remove the plugin from the bar layout and run
+`omarchy plugin remove aprabin98.ytmusic`; the cache at
+`~/.cache/omarchy-ytmusic` can be removed separately if you want to erase it.
+If it was installed through the setup repository, remove it with
+`./bin/omarchy-setup remove config:omarchy/plugins/aprabin98.ytmusic` instead.
 
 For development, clone into `~/.config/omarchy/plugins/aprabin98.ytmusic` (a
 real directory — the shell's file watcher and `omarchy plugin validate` don't
-follow symlinks) and run `scripts/test.sh`.
+follow symlinks) and run `scripts/test.sh`. In the setup checkout, edit
+`projects/youtube-music/` and let the installer copy it there.
 
 ## Using it
 
@@ -360,23 +374,3 @@ All over IPC and the mpv socket, music at volume 0.
 | IPC spam (24 next/previous at once, shuffle ×4, repeat ×3) | Queue, shuffle and repeat consistent; no crash. |
 | Garbage in `session.json`, `player.json`, `searches.json`, `account.json` | Starts with defaults (signed out, no resume), still plays, no QML errors. A corrupt disk-cache file is a cache miss (unit test). |
 | 20 panel open/search/close cycles | Whole-shell PSS 261 MiB before, 253 MiB after the panel unloaded: no growth (budget 3 MiB). No crash in 21 opens. |
-
-## Changes in this fork
-
-Maintained by Prabin Acharya (`aprabin98.ytmusic`), based on the upstream
-`damir.ytmusic` plugin:
-
-- Sign-in now uses your **default browser** (`xdg-settings`) and tries every
-  profile, not only Chromium's `Default` profile.
-- Supports Chromium, Chrome, Brave, Vivaldi, Edge and Opera cookie stores,
-  plus Firefox, Zen and LibreWolf (native, Flatpak and Snap locations).
-- Falls back across GNOME Keyring, KWallet and `--password-store=basic` when
-  Chromium cookies cannot be decrypted.
-- Tests for browser detection, profile discovery, fallback order and keyring
-  decryption (`tests/backend/test_auth.py`).
-
-## Credits
-
-The plugin started as [omarchy-ytmusic by Damir Sagi](https://github.com/Damir-VistaBlox/omarchy-ytmusic),
-published under the MIT License. That copyright notice is retained in
-[LICENSE](LICENSE) alongside this fork's notice.

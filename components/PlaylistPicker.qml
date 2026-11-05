@@ -14,7 +14,7 @@ Rectangle {
 
   readonly property bool open: tracks.length > 0
   readonly property var store: service ? service.store : null
-  readonly property color foreground: bar ? bar.foreground : Color.foreground
+  readonly property color foreground: "#e2e8f0"
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
   readonly property var rows: store ? Model.ownedPlaylists(store.playlists).map(function(p) { return { item: p } }) : []
   readonly property alias results: resultList
@@ -110,6 +110,7 @@ Rectangle {
       width: parent.width - createButton.width - parent.spacing
       placeholderText: "New playlist with this song"
       foreground: root.foreground
+      accent: "#8b5cf6"
       font.family: root.fontFamily
 
       Keys.onPressed: function(event) {

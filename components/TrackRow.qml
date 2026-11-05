@@ -18,7 +18,7 @@ Item {
   property QtObject bar: null
   property var store: null
 
-  readonly property color foreground: bar ? bar.foreground : Color.foreground
+  readonly property color foreground: "#e2e8f0"
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
   readonly property bool showActions: (hover.hovered || cursor) && (showMove || showRemove || showQueueActions)
   readonly property bool hovered: hover.hovered
@@ -29,13 +29,27 @@ Item {
   signal playNextRequested()
   signal addToQueueRequested()
 
-  implicitHeight: Style.space(46)
+  implicitHeight: Style.space(54)
 
   Rectangle {
     anchors.fill: parent
-    radius: Style.spacing.labelGap
-    color: root.current ? Style.selectedFillFor(root.foreground, Color.accent)
-      : (hover.hovered || root.cursor ? Style.hoverFillFor(root.foreground, Color.accent) : "transparent")
+    radius: Style.space(10)
+    color: root.current ? Qt.rgba(0.545, 0.361, 0.965, 0.18)
+      : (hover.hovered || root.cursor ? Style.hoverFillFor(root.foreground, "#8b5cf6") : "transparent")
+    border.width: root.current || root.cursor ? 1 : 0
+    border.color: root.current ? Qt.rgba(0.545, 0.361, 0.965, 0.38)
+      : Style.hoverFillFor(root.foreground, "#8b5cf6")
+  }
+
+  Rectangle {
+    anchors.left: parent.left
+    anchors.leftMargin: Style.space(3)
+    anchors.verticalCenter: parent.verticalCenter
+    width: Style.space(3)
+    height: Style.space(24)
+    radius: width / 2
+    visible: root.current
+    color: "#a78bfa"
   }
 
   HoverHandler {
@@ -50,8 +64,8 @@ Item {
 
   Row {
     anchors.fill: parent
-    anchors.leftMargin: Style.space(6)
-    anchors.rightMargin: Style.space(8)
+    anchors.leftMargin: Style.space(10)
+    anchors.rightMargin: Style.space(10)
     spacing: Style.space(10)
 
     CoverArt {
@@ -123,6 +137,7 @@ Item {
           iconText: "󰒭"
           tooltipText: "Play next"
           foreground: root.foreground
+          hoverColor: "#8b5cf6"
           onClicked: root.playNextRequested()
         }
 
@@ -131,6 +146,7 @@ Item {
           iconText: "󰐕"
           tooltipText: "Add to queue"
           foreground: root.foreground
+          hoverColor: "#8b5cf6"
           onClicked: root.addToQueueRequested()
         }
 
@@ -139,6 +155,7 @@ Item {
           iconText: "󰁝"
           tooltipText: "Move up"
           foreground: root.foreground
+          hoverColor: "#8b5cf6"
           onClicked: root.moveRequested(-1)
         }
 
@@ -147,6 +164,7 @@ Item {
           iconText: "󰁅"
           tooltipText: "Move down"
           foreground: root.foreground
+          hoverColor: "#8b5cf6"
           onClicked: root.moveRequested(1)
         }
 
@@ -155,6 +173,7 @@ Item {
           iconText: "󰅖"
           tooltipText: root.removeTooltip
           foreground: root.foreground
+          hoverColor: "#8b5cf6"
           onClicked: root.removeRequested()
         }
       }

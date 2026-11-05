@@ -11,7 +11,7 @@ Item {
   property QtObject bar: null
 
   readonly property var store: service ? service.store : null
-  readonly property color foreground: bar ? bar.foreground : Color.foreground
+  readonly property color foreground: "#e2e8f0"
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
   readonly property bool signedIn: !!service && service.signedIn
   readonly property var account: service ? service.account : null
@@ -108,6 +108,7 @@ Item {
         text: "Sign out"
         tooltipText: "Delete the saved session from this computer"
         foreground: root.foreground
+        accent: "#8b5cf6"
         fontSize: Style.font.caption
         onClicked: root.service.signOut()
       }
@@ -125,6 +126,7 @@ Item {
         width: parent.width - createButton.width - parent.spacing
         placeholderText: "New playlist name"
         foreground: root.foreground
+        accent: "#8b5cf6"
         font.family: root.fontFamily
 
         Keys.onPressed: function(event) {
@@ -148,6 +150,7 @@ Item {
         enabled: nameField.text.trim() !== ""
         opacity: enabled ? 1 : 0.4
         foreground: root.foreground
+        accent: "#8b5cf6"
         fontSize: Style.font.caption
         onClicked: root.createPlaylist()
       }

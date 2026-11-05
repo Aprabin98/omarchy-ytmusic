@@ -11,18 +11,20 @@ Item {
   property QtObject bar: null
   property var store: null
 
-  readonly property color foreground: bar ? bar.foreground : Color.foreground
+  readonly property color foreground: "#e2e8f0"
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
   readonly property bool isArtist: item && item.type === "artist"
 
   signal activated()
 
-  implicitHeight: Style.space(50)
+  implicitHeight: Style.space(58)
 
   Rectangle {
     anchors.fill: parent
-    radius: Style.spacing.labelGap
-    color: hover.hovered || root.cursor ? Style.hoverFillFor(root.foreground, Color.accent) : "transparent"
+    radius: Style.space(10)
+    color: hover.hovered || root.cursor ? Style.hoverFillFor(root.foreground, "#8b5cf6") : "transparent"
+    border.width: root.cursor ? 1 : 0
+    border.color: Style.hoverFillFor(root.foreground, "#8b5cf6")
   }
 
   HoverHandler {
@@ -37,8 +39,8 @@ Item {
 
   Row {
     anchors.fill: parent
-    anchors.leftMargin: Style.space(6)
-    anchors.rightMargin: Style.space(8)
+    anchors.leftMargin: Style.space(10)
+    anchors.rightMargin: Style.space(10)
     spacing: Style.space(10)
 
     CoverArt {
