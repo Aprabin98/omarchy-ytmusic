@@ -240,6 +240,8 @@ Checked in Phase 7 (2026-09-11):
 - External text never reaches a shell: notifications and processes get
   argument arrays, mpv titles use byte-length quoting, and the only `sh -c`
   (mkdir for the cache) takes the path as `$1`.
+- Playlist names are omitted from notifications so private titles do not appear
+  in the notification helper's process arguments.
 - The `ytmusic` IPC target, like all Omarchy shell IPC, answers any process of
   your user (including `signOut`).
 - ytmusicapi is pinned; yt-dlp deliberately is not, because YouTube changes

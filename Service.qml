@@ -593,7 +593,9 @@ Item {
     backend.request("createPlaylist", { title: name, videoIds: ids.length ? ids : null }, function(reply) {
       if (reply.ok) {
         storeItem.loadLibrary(true)
-        root.notify("Playlist created", ids.length ? name + " — " + ids.length + (ids.length === 1 ? " song" : " songs") : name)
+        // Playlist names are private user data. Keep them out of notification
+        // helper argv, which may be visible to other local accounts.
+        root.notify("Playlist created", "Your private playlist is ready.")
       } else {
         root.fail(reply.error.message)
       }
@@ -608,7 +610,7 @@ Item {
     backend.request("addToPlaylist", { playlistId: playlist.playlistId, videoIds: list.map(function(t) { return t.videoId }) }, function(reply) {
       if (reply.ok) {
         storeItem.forgetCollection("playlist", playlist.playlistId)
-        root.notify("Added to " + playlist.title, list.length === 1 ? Model.mediaTitle(list[0]) : list.length + " songs")
+        root.notify("Added to playlist", list.length === 1 ? "1 song added." : list.length + " songs added.")
       } else {
         root.fail(reply.error.message)
       }
@@ -635,7 +637,7 @@ Item {
       if (reply.ok) {
         storeItem.forgetCollection("playlist", playlist.playlistId)
         storeItem.loadLibrary(true)
-        root.notify("Playlist deleted", playlist.title || "")
+        root.notify("Playlist deleted", "Your private playlist was deleted.")
       } else {
         root.fail(reply.error.message)
       }
